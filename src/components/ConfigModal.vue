@@ -1,67 +1,53 @@
 <script setup lang="ts">
-// import HelloWorld from './components/HelloWorld.vue'
 import { minutesToMilliseconds } from "date-fns"
-import {
-  ref,
-  watchEffect,
-  reactive,
-  nextTick,
-  onUnmounted,
-  computed,
-} from "vue"
-import { getMinutes, getSeconds } from "date-fns"
-import z from "zod"
-
-const timerSchema = z.object({
-  pomodoro: z.object({
-    milliseconds: z.number().min(1000).max(3600000),
-  }),
-  shortBreak: z.object({
-    milliseconds: z.number().min(1000).max(3600000),
-  }),
-  longBreak: z.object({
-    milliseconds: z.number().min(1000).max(3600000),
-  }),
-})
-
-type Timer = z.infer<typeof timerSchema>
+import { ref, nextTick, watchEffect } from "vue"
+import { getMinutes } from "date-fns"
+import { timerConfigSchema } from "../utils"
+import type { TimerConfig } from "../utils"
 
 interface Props {
-  updateTimerConfig: (config: Timer) => void
-  currentConfig: Timer
+  currentConfig: TimerConfig
 }
 const props = defineProps<Props>()
 
-const pomodoroInMinutes = ref(
-  getMinutes(props.currentConfig.pomodoro.milliseconds)
-)
-const shortBreakInMinutes = ref(
-  getMinutes(props.currentConfig.shortBreak.milliseconds)
-)
-const longBreakInMinutes = ref(
-  getMinutes(props.currentConfig.longBreak.milliseconds)
-)
+const emit = defineEmits(["submit"])
+
+const pomodoroInMinutes = ref(getMinutes(props.currentConfig.pomodoro))
+const shortBreakInMinutes = ref(getMinutes(props.currentConfig.shortBreak))
+const longBreakInMinutes = ref(getMinutes(props.currentConfig.longBreak))
+
+const checkInputs = () => {
+  try {
+    timerConfigSchema.parse({
+      pomodoro: minutesToMilliseconds(pomodoroInMinutes.value),
+      shortBreak: minutesToMilliseconds(shortBreakInMinutes.value),
+      longBreak: minutesToMilliseconds(longBreakInMinutes.value),
+    })
+    return false
+  } catch (err) {
+    return true
+  }
+}
+
+const formIsValid = ref(true)
 
 const handleSubmit = () => {
+  formIsValid.value = true
+
   const newTimer = {
-    pomodoro: {
-      milliseconds: minutesToMilliseconds(pomodoroInMinutes.value),
-    },
-    shortBreak: {
-      milliseconds: minutesToMilliseconds(shortBreakInMinutes.value),
-    },
-    longBreak: {
-      milliseconds: minutesToMilliseconds(longBreakInMinutes.value),
-    },
+    pomodoro: minutesToMilliseconds(pomodoroInMinutes.value),
+    shortBreak: minutesToMilliseconds(shortBreakInMinutes.value),
+    longBreak: minutesToMilliseconds(longBreakInMinutes.value),
   }
 
-  const data = timerSchema.safeParse(newTimer)
+  const data = timerConfigSchema.safeParse(newTimer)
 
   if (!data.success) {
-    console.log(data.error)
+    formIsValid.value = false
     return
-  }
-  props.updateTimerConfig(newTimer)
+  } 
+
+  emit("submit", data.data)
 }
 </script>
 
@@ -71,33 +57,41 @@ const handleSubmit = () => {
     <label class="modal-box relative w-auto" htmlFor="">
       <form @submit.prevent="handleSubmit" class="space-y-4">
         <div class="space-y-2">
-          <label class="block" htmlFor="pomodoro"> Pomodoro </label>
+          <label class="block" htmlFor="pomodoro">Pomodoro</label>
           <input
             id="pomodoro"
             class="input-bordered input w-full max-w-xs bg-base-200"
+            min="1"
+            max="60"
             v-model.number="pomodoroInMinutes"
           />
         </div>
         <div class="space-y-2">
-          <label class="block" htmlFor="shortBreak"> Short break </label>
+          <label class="block" htmlFor="shortBreak">Short break</label>
           <input
             id="shortBreak"
             class="input-bordered input w-full max-w-xs bg-base-200"
             v-model.number="shortBreakInMinutes"
+            min="1"
+            max="60"
           />
         </div>
         <div class="space-y-2">
-          <label class="block" htmlFor="longBreak"> Long break </label>
+          <label class="block" htmlFor="longBreak">Long break</label>
           <input
             id="longBreak"
             class="input-bordered input w-full max-w-xs bg-base-200"
             v-model.number="longBreakInMinutes"
+            min="1"
+            max="60"
           />
         </div>
-        <button type="submit" class="modal-action w-full">
-          <label htmlFor="my-modal-4" class="btn-secondary btn mt-4 w-full">
-            Submit
-          </label>
+        <button
+          type="submit"
+          class="w-full modal-action btn-secondary btn mt-4"
+          v-bind:disabled="checkInputs()"
+        >
+          <label htmlFor="my-modal-4" class="w-full">Submit</label>
         </button>
       </form>
     </label>

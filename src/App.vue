@@ -4,46 +4,38 @@ import ConfigModal from "./components/ConfigModal.vue"
 import { ref, watchEffect, nextTick, onUnmounted, computed } from "vue"
 import type { Ref } from "vue"
 import { getMinutes, getSeconds } from "date-fns"
+import { zeroPad } from "./utils"
+import type { TimerConfig } from "./utils"
 
-const zeroPad = (num: number) => String(num).padStart(2, "0")
-
-const timerConfig = ref({
-  pomodoro: {
-    milliseconds: 1500000,
-  },
-  shortBreak: {
-    milliseconds: 300000,
-  },
-  longBreak: {
-    milliseconds: 900000,
-  },
+const timerConfigInMilliseconds = ref({
+  pomodoro: 1500000,
+  shortBreak: 300000,
+  longBreak: 900000,
 })
 
-type TimerConfig = typeof timerConfig.value
-
-const updateTimerConfig = (config: TimerConfig) => {
-  timerConfig.value = config
-}
-
 const currentMode: Ref<keyof TimerConfig> = ref("pomodoro")
+const currentTimer = ref(timerConfigInMilliseconds.value[currentMode.value])
+const isRunning = ref(true)
 
-const currentTimer = ref(timerConfig.value[currentMode.value].milliseconds)
 const currentTimerMinutes = computed(() => getMinutes(currentTimer.value))
 const currentTimerSeconds = computed(() => getSeconds(currentTimer.value))
+
+// if the timer was isPaused, then when the mode changes, the timer should be reset to the new mode's timer.
+watchEffect(() => {
+  if (!isRunning.value) return
+  currentTimer.value = timerConfigInMilliseconds.value[currentMode.value]
+})
+
+const updateTimerConfig = (config: TimerConfig) => {
+  timerConfigInMilliseconds.value = config
+}
 
 const changeMode = (newMode: keyof TimerConfig) => {
   currentMode.value = newMode
   nextTick(() => {
-    currentTimer.value = timerConfig.value[currentMode.value].milliseconds
+    currentTimer.value = timerConfigInMilliseconds.value[currentMode.value]
   })
 }
-
-const isRunning = ref(true)
-// if the timer was isPaused, then when the mode changes, the timer should be reset to the new mode's timer.
-watchEffect(() => {
-  if (!isRunning.value) return
-  currentTimer.value = timerConfig.value[currentMode.value].milliseconds
-})
 
 const timer = setInterval(() => {
   if (isRunning.value) return
@@ -70,31 +62,47 @@ onUnmounted(() => {
       </div>
 
       <ConfigModal
-        :currentConfig="timerConfig"
-        :update-timer-config="updateTimerConfig"
+        @submit="updateTimerConfig"
+        :current-config="timerConfigInMilliseconds"
       />
 
       <ul class="mt-4 flex items-center">
-        <li class="flex-1 cursor-pointer">
+        <li class="flex-1 cursor-pointer text-accent">
           <button
-            class="block w-full bg-base-300 px-6 py-4"
+            class="block w-full px-6 py-4 disabled:bg-gray-700 disabled:text-gray-400"
+            :class="{
+              'bg-base-300': currentMode !== 'pomodoro',
+              'text-accent-content bg-accent ': currentMode === 'pomodoro',
+            }"
             @click="changeMode('pomodoro')"
+            :disabled="!isRunning"
           >
             Pomodoro
           </button>
         </li>
         <li class="flex-1 cursor-pointer text-primary">
           <button
-            class="block w-full bg-base-300 px-6 py-4"
+            class="block w-full bg-base-300 px-6 py-4 disabled:bg-gray-700 disabled:text-gray-400"
+            :class="{
+              'bg-base-300': currentMode !== 'shortBreak',
+              'bg-primary text-primary-content': currentMode === 'shortBreak',
+            }"
             @click="changeMode('shortBreak')"
+            :disabled="!isRunning"
           >
             Descanso
           </button>
         </li>
         <li class="flex-1 cursor-pointer text-secondary">
           <button
-            class="block w-full bg-base-300 px-6 py-4"
+            class="block w-full bg-base-300 px-6 py-4 disabled:bg-gray-700 disabled:text-gray-400"
+            :class="{
+              'bg-base-300': currentMode !== 'longBreak',
+              'bg-secondary text-secondary-content':
+                currentMode === 'longBreak',
+            }"
             @click="changeMode('longBreak')"
+            :disabled="!isRunning"
           >
             Descanso largo
           </button>
@@ -115,14 +123,14 @@ onUnmounted(() => {
 
       <button
         v-if="isRunning === true"
-        class="btn btn-primary btn-lg mt-8 block mx-auto"
+        class="btn btn-primary btn-lg mt-12 block mx-auto"
         @click="isRunning = false"
       >
         Iniciar
       </button>
       <button
         v-else
-        class="btn btn-error btn-lg mt-8 block mx-auto"
+        class="btn btn-error btn-lg mt-12 block mx-auto"
         @click="isRunning = true"
       >
         Stop
