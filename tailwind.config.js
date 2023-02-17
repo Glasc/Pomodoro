@@ -5,7 +5,7 @@ module.exports = {
     extend: {},
   },
   daisyui: {
-    themes: ["lofi",
+    themes: [
       {
         rosepine: {
           primary: "#c4a7e7",
@@ -19,6 +19,7 @@ module.exports = {
           error: "#eb6f92",
         },
       },
+      "lofi",
     ],
   },
 
