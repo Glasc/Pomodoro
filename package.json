@@ -14,9 +14,13 @@
     "@vee-validate/zod": "^4.7.4",
     "daisyui": "^2.50.1",
     "date-fns": "^2.29.3",
+    "focus-trap": "^7.3.1",
+    "focus-trap-vue": "^4.0.1",
     "pinia": "^2.0.28",
+    "theme-change": "^2.3.0",
     "vee-validate": "^4.7.4",
     "vue": "^3.2.45",
+    "vue3-radial-progress": "^1.1.1",
     "zod": "^3.20.6"
   },
   "devDependencies": {

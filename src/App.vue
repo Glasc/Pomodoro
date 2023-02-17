@@ -1,11 +1,12 @@
-<!-- using vue 3 -->
 <script setup lang="ts">
 import ConfigModal from "./components/ConfigModal.vue"
+import SettingsButton from "./components/SettingsButton.vue"
 import { ref, watchEffect, nextTick, onUnmounted, computed } from "vue"
 import type { Ref } from "vue"
 import { getMinutes, getSeconds } from "date-fns"
 import { zeroPad } from "./utils"
 import type { TimerConfig } from "./utils"
+import bellSound from "./assets/bell.mp3"
 
 const timerConfigInMilliseconds = ref({
   pomodoro: 1500000,
@@ -40,6 +41,9 @@ const changeMode = (newMode: keyof TimerConfig) => {
 const timer = setInterval(() => {
   if (!isRunning.value) return
   if (currentTimer.value === 0) {
+    const audio = new Audio(bellSound)
+    audio.volume = 0.3
+    audio.play()
     isRunning.value = false
     return
   }
@@ -53,35 +57,22 @@ onUnmounted(() => {
 </script>
 
 <template>
+  <ConfigModal
+    @submit="updateTimerConfig"
+    :current-config="timerConfigInMilliseconds"
+    :current-mode="currentMode"
+  />
+
   <div
     class="relative flex min-h-screen items-center justify-center"
     :class="{ 'bg-base-300': isRunning }"
   >
-    <div class="w-full max-w-xl mb-8">
+    <div class="w-full max-w-xl px-4 mb-8 space-y-14">
       <div class="relative flex justify-end mb-8">
-        <button class="disabled:bg-base-100" :disabled="isRunning">
-          <label
-            v-if="isRunning"
-            class="btn-sm btn btn-outline btn-info hover:none w-full"
-            htmlFor="my-modal-4"
-            :disabled="false"
-            >Settings</label
-          >
-          <label
-            v-else
-            class="btn-sm btn btn-outline btn-info hover:none w-full"
-            htmlFor="my-modal-4"
-            >Settings</label
-          >
-        </button>
+        <SettingsButton :is-running="isRunning" />
       </div>
 
-      <ConfigModal
-        @submit="updateTimerConfig"
-        :current-config="timerConfigInMilliseconds"
-      />
-
-      <ul class="mt-4 flex items-center">
+      <ul class="menu menu-vertical sm:menu-horizontal rounded-box sm:w-full">
         <li class="flex-1 cursor-pointer text-accent">
           <button
             class="block w-full px-6 py-4 disabled:bg-base-100 font-medium disabled:text-gray-400"
@@ -96,7 +87,7 @@ onUnmounted(() => {
             Pomodoro
           </button>
         </li>
-        <li class="flex-1 cursor-pointer text-primary">
+        <li class="flex-1 cursor-pointer text-primary rounded-xl">
           <button
             class="block w-full bg-base-300 px-6 py-4 disabled:bg-base-100 font-medium disabled:text-gray-400"
             :class="{
@@ -126,10 +117,20 @@ onUnmounted(() => {
         </li>
       </ul>
 
-      <div
-        class="mx-auto mt-12 flex h-72 w-72 items-center justify-center border-8 border-primary/70 rounded-full"
-      >
-        <div class="pointer-events-none">
+      <div class="flex justify-center">
+        <div
+          class="radial-progress bg-base-200"
+          :class="{
+            'text-accent': currentMode === 'pomodoro',
+            'text-primary': currentMode === 'shortBreak',
+            'text-secondary': currentMode === 'longBreak',
+          }"
+          style="--size: 17rem; --thickness: 0.35rem"
+          :style="{
+            '--value':
+              (currentTimer / timerConfigInMilliseconds[currentMode]) * 100,
+          }"
+        >
           <span class="block p-8 text-center text-6xl font-medium">
             {{ zeroPad(currentTimerMinutes) }}:{{
               zeroPad(currentTimerSeconds)
@@ -140,14 +141,19 @@ onUnmounted(() => {
 
       <button
         v-if="!isRunning"
-        class="btn btn-primary btn-lg mt-12 block mx-auto"
+        class="btn btn-lg block mx-auto"
+        :class="{
+          'btn-accent': currentMode === 'pomodoro',
+          'btn-primary': currentMode === 'shortBreak',
+          'btn-secondary': currentMode === 'longBreak',
+        }"
         @click="isRunning = true"
       >
         Start
       </button>
       <button
         v-else
-        class="btn btn-error btn-lg mt-12 block mx-auto"
+        class="btn btn-error btn-lg block mx-auto"
         @click="isRunning = false"
       >
         Stop

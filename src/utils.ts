@@ -8,15 +8,15 @@ export const timerConfigSchema = z.object({
       invalid_type_error: "A number must be provided.",
       required_error: "A number is required",
     })
-    .min(1, "Minimum one minutes")
+    .min(0.1, "Minimum one minute")
     .max(60, "Maximum 60 minutes"),
   shortBreak: z
     .number({ invalid_type_error: "A number must be provided." })
-    .min(1, "Minimum one minutes")
+    .min(1, "Minimum one minute")
     .max(60, "Maximum 60 minutes"),
   longBreak: z
     .number({ invalid_type_error: "A number must be provided." })
-    .min(1, "Minimum one minutes")
+    .min(1, "Minimum one minute")
     .max(60, "Maximum 60 minutes"),
 })
 
