@@ -20,7 +20,6 @@
     "theme-change": "^2.3.0",
     "vee-validate": "^4.7.4",
     "vue": "^3.2.45",
-    "vue3-radial-progress": "^1.1.1",
     "zod": "^3.20.6"
   },
   "devDependencies": {
