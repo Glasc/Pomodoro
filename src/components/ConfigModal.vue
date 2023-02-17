@@ -1,97 +1,125 @@
 <script setup lang="ts">
 import { minutesToMilliseconds } from "date-fns"
-import { ref, nextTick, watchEffect } from "vue"
+import { ref, defineProps } from "vue"
 import { getMinutes } from "date-fns"
 import { timerConfigSchema } from "../utils"
 import type { TimerConfig } from "../utils"
+import { useField, useForm } from "vee-validate"
+import { toFormValidator } from "@vee-validate/zod"
 
 interface Props {
   currentConfig: TimerConfig
 }
+
 const props = defineProps<Props>()
-
-const emit = defineEmits(["submit"])
-
 const pomodoroInMinutes = ref(getMinutes(props.currentConfig.pomodoro))
 const shortBreakInMinutes = ref(getMinutes(props.currentConfig.shortBreak))
 const longBreakInMinutes = ref(getMinutes(props.currentConfig.longBreak))
 
-const checkInputs = () => {
-  try {
-    timerConfigSchema.parse({
-      pomodoro: minutesToMilliseconds(pomodoroInMinutes.value),
-      shortBreak: minutesToMilliseconds(shortBreakInMinutes.value),
-      longBreak: minutesToMilliseconds(longBreakInMinutes.value),
-    })
-    return false
-  } catch (err) {
-    return true
+const emit = defineEmits(["submit"])
+
+const validationSchema = toFormValidator(timerConfigSchema)
+
+const { handleSubmit, errors } = useForm({
+  validationSchema,
+  initialValues: {
+    pomodoro: pomodoroInMinutes.value,
+    shortBreak: shortBreakInMinutes.value,
+    longBreak: longBreakInMinutes.value,
+  },
+})
+
+const { value: pomodoro } = useField("pomodoro")
+const { value: shortBreak } = useField("shortBreak")
+const { value: longBreak } = useField("longBreak")
+
+const areInputsValid = () =>
+  timerConfigSchema.safeParse({
+    pomodoro: pomodoro.value,
+    shortBreak: shortBreak.value,
+    longBreak: longBreak.value,
+  }).success
+
+const onSubmit = handleSubmit((values) => {
+  const configToMilliseconds = {
+    pomodoro: minutesToMilliseconds(values.pomodoro),
+    shortBreak: minutesToMilliseconds(values.shortBreak),
+    longBreak: minutesToMilliseconds(values.longBreak),
   }
-}
-
-const formIsValid = ref(true)
-
-const handleSubmit = () => {
-  formIsValid.value = true
-
-  const newTimer = {
-    pomodoro: minutesToMilliseconds(pomodoroInMinutes.value),
-    shortBreak: minutesToMilliseconds(shortBreakInMinutes.value),
-    longBreak: minutesToMilliseconds(longBreakInMinutes.value),
-  }
-
-  const data = timerConfigSchema.safeParse(newTimer)
-
-  if (!data.success) {
-    formIsValid.value = false
-    return
-  } 
-
-  emit("submit", data.data)
-}
+  emit("submit", configToMilliseconds)
+})
 </script>
 
 <template>
   <input type="checkbox" id="my-modal-4" class="modal-toggle" />
   <label htmlFor="my-modal-4" class="modal cursor-pointer">
-    <label class="modal-box relative w-auto" htmlFor="">
-      <form @submit.prevent="handleSubmit" class="space-y-4">
+    <label class="modal-box max-w-xs w-full relative bg-info" htmlFor="">
+      <form @submit.prevent="onSubmit" class="space-y-4">
+        <h3 class="text-center text-primary text-3xl font-semibold">Config</h3>
         <div class="space-y-2">
           <label class="block" htmlFor="pomodoro">Pomodoro</label>
           <input
             id="pomodoro"
-            class="input-bordered input w-full max-w-xs bg-base-200"
+            class="input-bordered input w-full max-w-xs bg-base-300"
+            :class="{ 'input-error': errors.pomodoro }"
+            required
+            autocomplete="off"
             min="1"
             max="60"
-            v-model.number="pomodoroInMinutes"
+            placeholder="minutes"
+            v-model.number="pomodoro"
           />
+          <span class="text-error text-sm font-medium block">{{
+            errors.pomodoro
+          }}</span>
         </div>
         <div class="space-y-2">
           <label class="block" htmlFor="shortBreak">Short break</label>
           <input
             id="shortBreak"
-            class="input-bordered input w-full max-w-xs bg-base-200"
-            v-model.number="shortBreakInMinutes"
+            class="input-bordered input w-full max-w-xs bg-base-300"
+            :class="{ 'input-error': errors.shortBreak }"
+            autocomplete="off"
+            v-model.number="shortBreak"
+            placeholder="minutes"
             min="1"
             max="60"
           />
+          <span class="text-error text-sm font-medium block">{{
+            errors.shortBreak
+          }}</span>
         </div>
         <div class="space-y-2">
           <label class="block" htmlFor="longBreak">Long break</label>
           <input
             id="longBreak"
-            class="input-bordered input w-full max-w-xs bg-base-200"
-            v-model.number="longBreakInMinutes"
+            class="input-bordered input w-full max-w-xs bg-base-300"
+            :class="{ 'input-error': errors.longBreak }"
+            autocomplete="off"
+            v-model.number="longBreak"
             min="1"
+            placeholder="minutes"
             max="60"
           />
+          <span class="text-error text-sm font-medium block">{{
+            errors.longBreak
+          }}</span>
         </div>
         <button
           type="submit"
-          class="w-full modal-action btn-secondary btn mt-4"
-          v-bind:disabled="checkInputs()"
+          class="w-full modal-action mt-4 disabled:bg-base-300"
+          v-bind:disabled="!areInputsValid()"
         >
-          <label htmlFor="my-modal-4" class="w-full">Submit</label>
+          <label
+            v-if="!areInputsValid()"
+            :disabled="true"
+            class="btn-primary btn w-full"
+            htmlFor="my-modal-4"
+            >Submit</label
+          >
+          <label v-else class="btn-primary btn w-full" htmlFor="my-modal-4"
+            >Submit</label
+          >
         </button>
       </form>
     </label>

@@ -15,14 +15,14 @@ const timerConfigInMilliseconds = ref({
 
 const currentMode: Ref<keyof TimerConfig> = ref("pomodoro")
 const currentTimer = ref(timerConfigInMilliseconds.value[currentMode.value])
-const isRunning = ref(true)
+const isRunning = ref(false)
 
 const currentTimerMinutes = computed(() => getMinutes(currentTimer.value))
 const currentTimerSeconds = computed(() => getSeconds(currentTimer.value))
 
 // if the timer was isPaused, then when the mode changes, the timer should be reset to the new mode's timer.
 watchEffect(() => {
-  if (!isRunning.value) return
+  if (isRunning.value) return
   currentTimer.value = timerConfigInMilliseconds.value[currentMode.value]
 })
 
@@ -38,9 +38,9 @@ const changeMode = (newMode: keyof TimerConfig) => {
 }
 
 const timer = setInterval(() => {
-  if (isRunning.value) return
+  if (!isRunning.value) return
   if (currentTimer.value === 0) {
-    isRunning.value = true
+    isRunning.value = false
     return
   }
 
@@ -53,12 +53,27 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="relative flex min-h-screen items-center justify-center">
-    <div class="w-full max-w-xl">
-      <div class="relative flex justify-end">
-        <label htmlFor="my-modal-4" class="btn-info btn-sm btn">
-          Settings
-        </label>
+  <div
+    class="relative flex min-h-screen items-center justify-center"
+    :class="{ 'bg-base-300': isRunning }"
+  >
+    <div class="w-full max-w-xl mb-8">
+      <div class="relative flex justify-end mb-8">
+        <button class="disabled:bg-base-100" :disabled="isRunning">
+          <label
+            v-if="isRunning"
+            class="btn-sm btn btn-outline btn-info hover:none w-full"
+            htmlFor="my-modal-4"
+            :disabled="false"
+            >Settings</label
+          >
+          <label
+            v-else
+            class="btn-sm btn btn-outline btn-info hover:none w-full"
+            htmlFor="my-modal-4"
+            >Settings</label
+          >
+        </button>
       </div>
 
       <ConfigModal
@@ -69,40 +84,42 @@ onUnmounted(() => {
       <ul class="mt-4 flex items-center">
         <li class="flex-1 cursor-pointer text-accent">
           <button
-            class="block w-full px-6 py-4 disabled:bg-gray-700 disabled:text-gray-400"
+            class="block w-full px-6 py-4 disabled:bg-base-100 font-medium disabled:text-gray-400"
             :class="{
               'bg-base-300': currentMode !== 'pomodoro',
-              'text-accent-content bg-accent ': currentMode === 'pomodoro',
+              'text-accent-content bg-accent disabled:text-accent/60':
+                currentMode === 'pomodoro',
             }"
             @click="changeMode('pomodoro')"
-            :disabled="!isRunning"
+            :disabled="isRunning"
           >
             Pomodoro
           </button>
         </li>
         <li class="flex-1 cursor-pointer text-primary">
           <button
-            class="block w-full bg-base-300 px-6 py-4 disabled:bg-gray-700 disabled:text-gray-400"
+            class="block w-full bg-base-300 px-6 py-4 disabled:bg-base-100 font-medium disabled:text-gray-400"
             :class="{
               'bg-base-300': currentMode !== 'shortBreak',
-              'bg-primary text-primary-content': currentMode === 'shortBreak',
+              'bg-primary text-primary-content disabled:text-primary/60':
+                currentMode === 'shortBreak',
             }"
             @click="changeMode('shortBreak')"
-            :disabled="!isRunning"
+            :disabled="isRunning"
           >
             Descanso
           </button>
         </li>
         <li class="flex-1 cursor-pointer text-secondary">
           <button
-            class="block w-full bg-base-300 px-6 py-4 disabled:bg-gray-700 disabled:text-gray-400"
+            class="block w-full bg-base-300 px-6 py-4 disabled:bg-base-100 font-medium disabled:text-gray-400"
             :class="{
               'bg-base-300': currentMode !== 'longBreak',
-              'bg-secondary text-secondary-content':
+              'bg-secondary text-secondary-content disabled:text-secondary/60':
                 currentMode === 'longBreak',
             }"
             @click="changeMode('longBreak')"
-            :disabled="!isRunning"
+            :disabled="isRunning"
           >
             Descanso largo
           </button>
@@ -122,16 +139,16 @@ onUnmounted(() => {
       </div>
 
       <button
-        v-if="isRunning === true"
+        v-if="!isRunning"
         class="btn btn-primary btn-lg mt-12 block mx-auto"
-        @click="isRunning = false"
+        @click="isRunning = true"
       >
-        Iniciar
+        Start
       </button>
       <button
         v-else
         class="btn btn-error btn-lg mt-12 block mx-auto"
-        @click="isRunning = true"
+        @click="isRunning = false"
       >
         Stop
       </button>
