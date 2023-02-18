@@ -89,10 +89,10 @@ onUnmounted(() => {
         </li>
         <li class="flex-1 cursor-pointer text-primary rounded-xl">
           <button
-            class="block w-full bg-base-300 px-6 py-4 disabled:bg-base-100 font-medium disabled:text-gray-400"
+            class="block w-full px-6 py-4 disabled:bg-base-100 font-medium disabled:text-gray-400"
             :class="{
               'bg-base-300': currentMode !== 'shortBreak',
-              'bg-primary text-primary-content disabled:text-primary/60':
+              'text-primary-content bg-primary disabled:text-primary/60':
                 currentMode === 'shortBreak',
             }"
             @click="changeMode('shortBreak')"
