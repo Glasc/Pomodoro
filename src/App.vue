@@ -75,9 +75,9 @@ onUnmounted(() => {
       <ul class="menu menu-vertical sm:menu-horizontal rounded-box sm:w-full">
         <li class="flex-1 cursor-pointer text-accent">
           <button
-            class="block w-full px-6 py-4 disabled:bg-base-100 font-medium disabled:text-gray-400"
+            class="block w-full px-6 py-4 disabled:bg-base-100 font-medium "
             :class="{
-              'bg-base-300': currentMode !== 'pomodoro',
+              'bg-base-300 disabled:text-gray-400': currentMode !== 'pomodoro',
               'text-accent-content bg-accent disabled:text-accent/60':
                 currentMode === 'pomodoro',
             }"
@@ -89,9 +89,9 @@ onUnmounted(() => {
         </li>
         <li class="flex-1 cursor-pointer text-primary rounded-xl">
           <button
-            class="block w-full px-6 py-4 disabled:bg-base-100 font-medium disabled:text-gray-400"
+            class="block w-full px-6 py-4 disabled:bg-base-100 font-medium "
             :class="{
-              'bg-base-300': currentMode !== 'shortBreak',
+              'bg-base-300 disabled:text-gray-400': currentMode !== 'shortBreak',
               'text-primary-content bg-primary disabled:text-primary/60':
                 currentMode === 'shortBreak',
             }"
@@ -103,9 +103,9 @@ onUnmounted(() => {
         </li>
         <li class="flex-1 cursor-pointer text-secondary">
           <button
-            class="block w-full bg-base-300 px-6 py-4 disabled:bg-base-100 font-medium disabled:text-gray-400"
+            class="block w-full bg-base-300 px-6 py-4 disabled:bg-base-100 font-medium "
             :class="{
-              'bg-base-300': currentMode !== 'longBreak',
+              'bg-base-300 disabled:text-gray-400': currentMode !== 'longBreak',
               'bg-secondary text-secondary-content disabled:text-secondary/60':
                 currentMode === 'longBreak',
             }"
