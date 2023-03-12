@@ -64,15 +64,15 @@ onUnmounted(() => {
   />
 
   <div
-    class="relative flex min-h-screen items-center justify-center"
+    class="relative flex min-h-screen items-start mt-4 md:items-center md:m-0 justify-center"
     :class="{ 'bg-base-300': isRunning }"
   >
-    <div class="w-full max-w-xl px-4">
+    <div class="w-full max-w-xl px-4 space-y-10">
       <div class="relative flex justify-end">
         <SettingsButton :is-running="isRunning" />
       </div>
 
-      <ul class="menu menu-vertical sm:menu-horizontal rounded-box sm:w-full mt-8">
+      <ul class="menu menu-vertical sm:menu-horizontal rounded-box sm:w-full">
         <li class="flex-1 cursor-pointer text-accent">
           <button
             class="block w-full px-6 py-4 disabled:bg-base-100 font-medium disabled:text-gray-400"
@@ -117,7 +117,7 @@ onUnmounted(() => {
         </li>
       </ul>
 
-      <div class="flex justify-center mt-8">
+      <div class="flex justify-center">
         <div
           class="radial-progress bg-base-200"
           :class="{
@@ -141,7 +141,7 @@ onUnmounted(() => {
 
       <button
         v-if="!isRunning"
-        class="btn btn-lg block mx-auto mt-6"
+        class="btn btn-lg block mx-auto"
         :class="{
           'btn-accent': currentMode === 'pomodoro',
           'btn-primary': currentMode === 'shortBreak',
@@ -153,7 +153,7 @@ onUnmounted(() => {
       </button>
       <button
         v-else
-        class="btn btn-error btn-lg block mx-auto mt-6"
+        class="btn btn-error btn-lg block mx-auto mt-8"
         @click="isRunning = false"
       >
         Stop
