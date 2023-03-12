@@ -15,7 +15,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="relative flex justify-between items-center mb-8 w-full">
+  <div class="relative flex justify-between items-center w-full">
     <button
       data-toggle-theme="rosepine,lofi"
       data-act-class="ACTIVECLASS"
