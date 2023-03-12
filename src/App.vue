@@ -68,7 +68,7 @@ onUnmounted(() => {
     :class="{ 'bg-base-300': isRunning }"
   >
     <div class="w-full max-w-xl px-4 mb-8 space-y-14">
-      <div class="relative flex justify-end mb-8">
+      <div class="relative flex justify-end sm:mb-8">
         <SettingsButton :is-running="isRunning" />
       </div>
 
