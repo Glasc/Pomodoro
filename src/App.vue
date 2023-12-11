@@ -6,7 +6,7 @@ import { getMinutes, getSeconds } from "date-fns"
 import { zeroPad } from "./utils"
 import type { TimerConfig } from "./utils"
 import bellSound from "./assets/bell.mp3"
-import Configmodal from "./components/configmodal.vue"
+import Configmodal from "./components/ConfigModal.vue"
 
 const timerConfigInMilliseconds = ref({
   pomodoro: 1500000,
