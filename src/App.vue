@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import ConfigModal from "./components/ConfigModal.vue"
 import SettingsButton from "./components/SettingsButton.vue"
 import { ref, watchEffect, nextTick, onUnmounted, computed } from "vue"
 import type { Ref } from "vue"
@@ -7,6 +6,7 @@ import { getMinutes, getSeconds } from "date-fns"
 import { zeroPad } from "./utils"
 import type { TimerConfig } from "./utils"
 import bellSound from "./assets/bell.mp3"
+import Configmodal from "./components/configmodal.vue"
 
 const timerConfigInMilliseconds = ref({
   pomodoro: 1500000,
@@ -54,10 +54,15 @@ const timer = setInterval(() => {
 onUnmounted(() => {
   clearInterval(timer)
 })
+
+const theme = localStorage.getItem("theme")
+if (!theme) {
+  localStorage.setItem("theme", "rosepine")
+}
 </script>
 
 <template>
-  <ConfigModal @submit="updateTimerConfig" :current-config="timerConfigInMilliseconds" :current-mode="currentMode"
+  <Configmodal @submit="updateTimerConfig" :current-config="timerConfigInMilliseconds" :current-mode="currentMode"
      />
 
   <div class="relative flex min-h-screen items-start mt-4 md:items-center md:m-0 justify-center"
