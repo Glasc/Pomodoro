@@ -54,7 +54,7 @@ onUnmounted(() => {
 
 const theme = localStorage?.getItem("theme")
 if (!theme) {
-  localStorage.setItem("theme", "rosepine")
+  localStorage.setItem("theme", "forest")
 }
 </script>
 
