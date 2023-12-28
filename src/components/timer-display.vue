@@ -24,9 +24,9 @@ const currentTimerMinutes = computed(() => getMinutes(props.currentTimer))
 const currentTimerSeconds = computed(() => getSeconds(props.currentTimer))
 
 const progressClass = computed(() => ({
-  'text-accent': props.currentMode === 'pomodoro',
-  'text-primary': props.currentMode === 'shortBreak',
-  'text-secondary': props.currentMode === 'longBreak',
+  'text-accent/90': props.currentMode === 'pomodoro',
+  'text-primary/90': props.currentMode === 'shortBreak',
+  'text-secondary/90': props.currentMode === 'longBreak',
 }))
 
 const progressValue = computed(() => ({

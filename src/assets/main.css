@@ -4,6 +4,12 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 *::before,
 *::after {
   box-sizing: border-box;
@@ -12,11 +18,8 @@
   font-weight: normal;
 }
 
-html[data-theme="rosepine"] {
+html[data-theme="forest"] {
   color-scheme: dark;
-}
-html {
-  scrollbar-gutter: stable;
 }
 
 html,

@@ -60,7 +60,7 @@ if (!theme) {
 
 <template>
   <config-modal @submit="updateTimerConfig" :current-config="timerConfigInMilliseconds" :current-mode="currentMode" />
-  <div class="relative flex min-h-screen" :class="{ 'bg-base-300': isRunning }">
+  <div class="relative flex min-h-screen" :class="{ 'bg-base-200': isRunning }">
     <div class="w-full space-y-10 pb-10">
       <navigation-bar :is-running="isRunning" />
       <mode-selector :current-mode="currentMode" @change-mode="changeMode" :is-running="isRunning" />

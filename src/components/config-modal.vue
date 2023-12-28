@@ -101,12 +101,12 @@ const onSubmit = handleSubmit((values) => {
             <button data-submit type="submit" class="w-full modal-action mt-4 disabled:bg-base-300"
               v-bind:disabled="!areInputsValid()">
               <label v-if="!areInputsValid()" :disabled="true" class="btn-primary btn w-full"
-                htmlFor="my-modal-4">Submit</label>
+                htmlFor="my-modal-4">Update</label>
               <label v-else class="btn-primary btn w-full" :class="{
                 'btn-accent': currentMode === 'pomodoro',
                 'btn-primary': currentMode === 'shortBreak',
                 'btn-secondary': currentMode === 'longBreak',
-              }" htmlFor="my-modal-4">Submit</label>
+              }" htmlFor="my-modal-4">Update</label>
             </button>
           </div>
         </form>

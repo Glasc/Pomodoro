@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@vee-validate/zod": "^4.7.4",
-    "daisyui": "^2.50.1",
+    "daisyui": "^4.4.24",
     "date-fns": "^2.29.3",
     "focus-trap": "^7.3.1",
     "focus-trap-vue": "^4.0.1",

@@ -1,28 +1,28 @@
 <template>
   <div class="flex justify-center px-3">
-    <ul class="menu menu-vertical sm:menu-horizontal rounded-box w-full">
-      <li class="flex-1 cursor-pointer text-accent">
-        <button class="block w-full px-6 py-4 disabled:bg-base-100 font-medium " :class="{
+    <ul class="menu menu-vertical sm:menu-horizontal rounded-box w-full max-w-xl">
+      <li class="flex-1 cursor-pointer">
+        <button class="block rounded-none text-base text-center w-full px-6 py-4 disabled:bg-base-100 font-medium " :class="{
           'bg-base-300 disabled:text-gray-400': props.currentMode !== 'pomodoro',
-          'text-accent-content bg-accent disabled:text-accent/60':
+          ' bg-accent disabled:text-accent/60 active':
             props.currentMode === 'pomodoro',
         }" @click="emit('changeMode', 'pomodoro')" :disabled="props.isRunning">
           Pomodoro
         </button>
       </li>
-      <li class="flex-1 cursor-pointer text-primary rounded-xl">
-        <button class="block w-full px-6 py-4 disabled:bg-base-100 font-medium " :class="{
+      <li class="flex-1 cursor-pointer rounded-xl">
+        <button class="block rounded-none text-center text-base px-6 py-4 disabled:bg-base-100 font-medium " :class="{
           'bg-base-300 disabled:text-gray-400': props.currentMode !== 'shortBreak',
-          'text-primary-content bg-primary disabled:text-primary/60':
+          'text-primary-content bg-primary disabled:text-primary/60 active':
             props.currentMode === 'shortBreak',
         }" @click="emit('changeMode', 'shortBreak')" :disabled="props.isRunning">
           Descanso
         </button>
-      </li>
-      <li class="flex-1 cursor-pointer text-secondary">
-        <button class="block w-full bg-base-300 px-6 py-4 disabled:bg-base-100 font-medium " :class="{
+      </li> 
+      <li class="flex-1 cursor-pointer ">
+        <button class="block rounded-none w-full text-center text-base bg-base-300 px-6 py-4 disabled:bg-base-100 font-medium " :class="{
           'bg-base-300 disabled:text-gray-400': props.currentMode !== 'longBreak',
-          'bg-secondary text-secondary-content disabled:text-secondary/60':
+          'bg-secondary text-secondary-content disabled:text-secondary/60 active':
             props.currentMode === 'longBreak',
         }" @click="emit('changeMode', 'longBreak')" :disabled="props.isRunning">
           Descanso largo
