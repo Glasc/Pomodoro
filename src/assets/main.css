@@ -12,6 +12,13 @@
   font-weight: normal;
 }
 
+html[data-theme="rosepine"] {
+  color-scheme: dark;
+}
+html {
+  scrollbar-gutter: stable;
+}
+
 html,
 body {
   height: 100%;
@@ -26,4 +33,3 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
