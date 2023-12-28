@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect, nextTick, onUnmounted } from "vue"
+import { ref, watchEffect, nextTick, onUnmounted, onMounted } from "vue"
 import type { Ref } from "vue"
 import type { TimerConfig } from "./utils"
 import bellSound from "./assets/bell.mp3"
@@ -9,13 +9,18 @@ import TimerControl from "./components/timer-control.vue"
 import TimerDisplay from "./components/timer-display.vue"
 import ModeSelector from "./components/mode-selector.vue"
 import CollapsibleElements from "./components/collapsible-elements.vue"
-const timerConfigInMilliseconds = ref({
+
+const defaultTimerConfig = {
   pomodoro: 1500000,
   shortBreak: 300000,
   longBreak: 900000,
-})
+}
 
-const currentMode: Ref<keyof TimerConfig> = ref("pomodoro")
+let timerConfigInLocalStorage = localStorage.getItem('timerConfig')
+let timerConfigInMilliseconds: Ref<TimerConfig> = ref(timerConfigInLocalStorage ? JSON.parse(timerConfigInLocalStorage) : defaultTimerConfig)
+
+let currentModeInLocalStorage = localStorage.getItem('currentMode')
+const currentMode: Ref<keyof TimerConfig> = ref(currentModeInLocalStorage ? currentModeInLocalStorage as keyof TimerConfig : "pomodoro")
 const currentTimer = ref(timerConfigInMilliseconds.value[currentMode.value])
 const isRunning = ref(false)
 
@@ -26,10 +31,12 @@ watchEffect(() => {
 
 const updateTimerConfig = (config: TimerConfig) => {
   timerConfigInMilliseconds.value = config
+  localStorage.setItem('timerConfig', JSON.stringify(config))
 }
 
 const changeMode = (newMode: keyof TimerConfig) => {
   currentMode.value = newMode
+  localStorage.setItem('currentMode', newMode)
   nextTick(() => {
     currentTimer.value = timerConfigInMilliseconds.value[currentMode.value]
   })
@@ -52,12 +59,33 @@ onUnmounted(() => {
   clearInterval(timer)
 })
 
+const handleSpacebar = (event: KeyboardEvent) => {
+  if (event.code === "Space") {
+    if (isRunning.value) {
+      isRunning.value = false
+      nextTick(() => {
+        const startButton = document.querySelector('[data-start-button]') as HTMLButtonElement
+        if (startButton) startButton.focus()
+      })
+    } else {
+      isRunning.value = true
+      nextTick(() => {
+        const stopButton = document.querySelector('[data-stop-button]') as HTMLButtonElement
+        if (stopButton) stopButton.focus()
+      })
+    }
+  }
+}
+
+onMounted(() => {
+  window.addEventListener("keydown", handleSpacebar)
+})
+
 const theme = localStorage?.getItem("theme")
 if (!theme) {
   localStorage.setItem("theme", "forest")
 }
 </script>
-
 <template>
   <config-modal @submit="updateTimerConfig" :current-config="timerConfigInMilliseconds" :current-mode="currentMode" />
   <div class="relative flex min-h-screen" :class="{ 'bg-base-200': isRunning }">
