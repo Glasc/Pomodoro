@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { minutesToMilliseconds } from "date-fns"
-import { ref, watchEffect } from "vue"
+import { ref } from "vue"
 import { getMinutes } from "date-fns"
 import { timerConfigSchema } from "../utils"
 import type { TimerConfig } from "../utils"
 import { useField, useForm } from "vee-validate"
 import { toFormValidator } from "@vee-validate/zod"
-import { th } from "date-fns/locale"
 
 interface Props {
   currentConfig: TimerConfig
@@ -48,16 +47,19 @@ const onSubmit = handleSubmit((values) => {
     shortBreak: minutesToMilliseconds(values.shortBreak),
     longBreak: minutesToMilliseconds(values.longBreak),
   }
+  const dataToggle = document.querySelector("[input-data-toggle]")
   emit("submit", configToMilliseconds)
-  // close the modal
-  const modal = document.getElementById("my-modal-4")
-  modal?.click()
+
+  if (dataToggle instanceof HTMLInputElement) {
+    dataToggle.checked = false
+  }
 })
+
 </script>
 
 <template>
   <modal-dialog tabindex="-1">
-    <input type="checkbox" id="my-modal-4" class="modal-toggle" />
+    <input input-data-toggle type="checkbox" id="my-modal-4" class="modal-toggle" />
     <label htmlFor="my-modal-4" class="modal cursor-pointer">
       <label class="modal-box max-w-xs w-full relative" htmlFor="">
         <form @submit.prevent="onSubmit" class="space-y-4">
@@ -95,15 +97,18 @@ const onSubmit = handleSubmit((values) => {
               errors.longBreak
             }}</span>
           </div>
-          <button type="submit" class="w-full modal-action mt-4 disabled:bg-base-300" v-bind:disabled="!areInputsValid()">
-            <label v-if="!areInputsValid()" :disabled="true" class="btn-primary btn w-full"
-              htmlFor="my-modal-4">Submit</label>
-            <label v-else class="btn-primary btn w-full" :class="{
-              'btn-accent': currentMode === 'pomodoro',
-              'btn-primary': currentMode === 'shortBreak',
-              'btn-secondary': currentMode === 'longBreak',
-            }" htmlFor="my-modal-4">Submit</label>
-          </button>
+          <div>
+            <button data-submit type="submit" class="w-full modal-action mt-4 disabled:bg-base-300"
+              v-bind:disabled="!areInputsValid()">
+              <label v-if="!areInputsValid()" :disabled="true" class="btn-primary btn w-full"
+                htmlFor="my-modal-4">Submit</label>
+              <label v-else class="btn-primary btn w-full" :class="{
+                'btn-accent': currentMode === 'pomodoro',
+                'btn-primary': currentMode === 'shortBreak',
+                'btn-secondary': currentMode === 'longBreak',
+              }" htmlFor="my-modal-4">Submit</label>
+            </button>
+          </div>
         </form>
       </label>
     </label>

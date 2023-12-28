@@ -55,7 +55,7 @@ onUnmounted(() => {
   clearInterval(timer)
 })
 
-const theme = localStorage.getItem("theme")
+const theme = localStorage?.getItem("theme")
 if (!theme) {
   localStorage.setItem("theme", "rosepine")
 }
@@ -71,7 +71,7 @@ if (!theme) {
       <div class="relative flex justify-end">
         <SettingsButton :is-running="isRunning" />
       </div>
-
+      
       <ul class="menu menu-vertical sm:menu-horizontal rounded-box sm:w-full">
         <li class="flex-1 cursor-pointer text-accent">
           <button class="block w-full px-6 py-4 disabled:bg-base-100 font-medium " :class="{
