@@ -10,7 +10,7 @@ defineProps<{
   <div class="bg-base-300 border-b-2 border-base-100">
     <div class="navbar mx-auto max-w-4xl px-4 py-5">
       <div class="flex-1">
-        <img src="tomato.png" alt="" width="40" height="40" />
+        <img src="/tomato.png" alt="" width="40" height="40" />
         <a class="text-2xl font-bold mt-1">Pomodoro</a>
       </div>
       <div class="flex-none space-x-3 sm:space-x-6">
